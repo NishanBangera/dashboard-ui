@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import RootProviders from "@/providers/RootProviders";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} text-stone-950 bg-stone-100`}>
-        {children}
+        <RootProviders>{children}</RootProviders>
       </body>
     </html>
   );
