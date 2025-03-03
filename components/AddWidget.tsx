@@ -48,7 +48,8 @@ const AddWidget = () => {
   });
 
   const addLayout = useMutation({
-    mutationFn: (data) => addLayoutConfig(data, "2514d2c7-a01e-4df5-a1df-25ed9f7654bf"),
+    mutationFn: (data) =>
+      addLayoutConfig(data, "2514d2c7-a01e-4df5-a1df-25ed9f7654bf"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["fetchDashboards"] });
     },
@@ -89,28 +90,13 @@ const AddWidget = () => {
     fields: groupValueFields,
     append: addGroupValueField,
     update: updateGroupValueField,
-    remove: removeGroupValueField
+    remove: removeGroupValueField,
   } = useFieldArray({
     control: form.control,
     name: "groupValueFields",
   });
   console.log("groupValueFields", groupValueFields);
   console.log("groupFieldsLength", groupValueFields[0].values.length);
-  // const valueFieldArrays = groupFields.map((group, groupIndex) =>
-  //   useFieldArray({
-  //     control: form.control,
-  //     name: `groups.${groupIndex}.values`,
-  //   })
-  // );
-
-  // const valueFieldArrayRefs = useRef(
-  //   groupFields.map((_, groupIndex) =>
-  //     useFieldArray({
-  //       control: form.control,
-  //       name: `groups.${groupIndex}.values`,
-  //     })
-  //   )
-  // );
 
   const onSubmit: SubmitHandler<z.infer<typeof addWidgetSchema>> = async (
     values
@@ -118,7 +104,7 @@ const AddWidget = () => {
     console.log("values", values);
     console.log("data", data?.data);
     if (data?.data) {
-      console.log("1111111")
+      console.log("1111111");
       const config = chartConfig(values, data.data);
       const strucutredData = {
         title: "New Widget",
@@ -126,17 +112,32 @@ const AddWidget = () => {
         widgetTypeId: values.widgetType,
         dashboardId: "0c98b537-fbc0-47e4-a9ac-396e0b19664c",
       };
-      console.log("22222222222")
+      console.log("22222222222");
       const newWidget = await createDashboardWidget(strucutredData as any);
-      console.log("33333333333", newWidget)
-      console.log("44444444444", newWidget?.data)
+      console.log("33333333333", newWidget);
+      console.log("44444444444", newWidget?.data);
       if (newWidget?.data) {
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        values.widgetType === "1a622b47-d3c7-48d0-9e8c-4189247f86b2" ? addLayout.mutate({ i: newWidget.data.id, x: 0, y: 0, w: 6, h: 10 } as any) : addLayout.mutate({ i: newWidget.data.id, x: 0, y: 0, w: 6, h: 10 } as any);
-        console.log("55555555555")
+        values.widgetType === "1a622b47-d3c7-48d0-9e8c-4189247f86b2"
+          ? addLayout.mutate({
+              i: newWidget.data.id,
+              x: 0,
+              y: 0,
+              w: 6,
+              h: 10,
+            } as any)
+          : addLayout.mutate({
+              i: newWidget.data.id,
+              x: 0,
+              y: 0,
+              w: 6,
+              h: 10,
+            } as any);
+        console.log("55555555555");
       }
     }
     setOpen(false);
+    form.reset()
   };
 
   return (
@@ -208,8 +209,8 @@ const AddWidget = () => {
                               variant="destructive"
                               size="sm"
                               onClick={() => {
-                                groupRemove(index)
-                                removeGroupValueField(index)
+                                groupRemove(index);
+                                removeGroupValueField(index);
                               }}
                             >
                               x
@@ -266,9 +267,11 @@ const AddWidget = () => {
                               variant="destructive"
                               size="sm"
                               onClick={() => {
-                                itemRemove(index)
+                                itemRemove(index);
                                 groupValueFields.map((group, groupIndex) => {
-                                  const values = group.values.filter((ele,eleIndex) => eleIndex!==index)
+                                  const values = group.values.filter(
+                                    (ele, eleIndex) => eleIndex !== index
+                                  );
                                   updateGroupValueField(groupIndex, {
                                     values,
                                   });
@@ -323,34 +326,32 @@ const AddWidget = () => {
               {/* Values */}
               <div className="grid gap-3 grid-cols-2">
                 {groupValueFields.map((group, groupIndex) => (
-                  <>
-                    <div className="grid gap-3">
-                      <h2>Group {groupIndex + 1}</h2>
-                      {group.values.map((value, valueIndex) => (
-                        <FormField
-                          control={form.control}
-                          key={valueIndex}
-                          name={`groupValueFields.${groupIndex}.values.${valueIndex}`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <div className="flex gap-2">
-                                <FormLabel className="max-w-max">
-                                  Value {valueIndex + 1}
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    className="max-w-max"
-                                    placeholder="Enter Value..."
-                                    {...field}
-                                  />
-                                </FormControl>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                      ))}
-                    </div>
-                  </>
+                  <div key={group.id} className="grid gap-3">
+                    <h2>Group {groupIndex + 1}</h2>
+                    {group.values.map((value, valueIndex) => (
+                      <FormField
+                        control={form.control}
+                        key={valueIndex}
+                        name={`groupValueFields.${groupIndex}.values.${valueIndex}`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="flex gap-2">
+                              <FormLabel className="max-w-max">
+                                Value {valueIndex + 1}
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  className="max-w-max"
+                                  placeholder="Enter Value..."
+                                  {...field}
+                                />
+                              </FormControl>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    ))}
+                  </div>
                 ))}
               </div>
             </div>
