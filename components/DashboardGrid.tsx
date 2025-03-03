@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import RadarChart from "./data/Radar";
@@ -46,6 +47,7 @@ const DashboardGrid = () => {
       lg: layouts.lg.map(layout => { return {i:layout.i,x:layout.x,y:layout.y,w:layout.w,h:layout.h}})
     }
     console.log(modifiedLayouts)
+    
     updateLayout.mutate(modifiedLayouts as any);
   };
   console.log("finallllllll", strucutredData.layouts[0]?.config.layouts);
