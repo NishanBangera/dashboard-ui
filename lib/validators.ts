@@ -10,6 +10,7 @@ export const addWidgetSchema = z.object({
     groupName: z.array(z.object({
         name: z.string().nonempty()
     })),
+    title: z.string().nonempty(),
     items: z.array(z.object({
         name: z.string().nonempty()
     })),

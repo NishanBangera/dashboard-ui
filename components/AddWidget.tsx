@@ -61,6 +61,7 @@ const AddWidget = () => {
       widgetType: "",
       groupName: [{ name: "" }],
       maxValue: "",
+      title:"",
       items: [{ name: "" }],
       groupValueFields: [{ values: [""] }],
     },
@@ -107,7 +108,7 @@ const AddWidget = () => {
       console.log("1111111");
       const config = chartConfig(values, data.data);
       const strucutredData = {
-        title: "New Widget",
+        title: values.title,
         config,
         widgetTypeId: values.widgetType,
         dashboardId: "0c98b537-fbc0-47e4-a9ac-396e0b19664c",
@@ -117,23 +118,13 @@ const AddWidget = () => {
       console.log("33333333333", newWidget);
       console.log("44444444444", newWidget?.data);
       if (newWidget?.data) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        values.widgetType === "1a622b47-d3c7-48d0-9e8c-4189247f86b2"
-          ? addLayout.mutate({
+        addLayout.mutate({
               i: newWidget.data.id,
               x: 0,
               y: 0,
               w: 6,
               h: 10,
             } as any)
-          : addLayout.mutate({
-              i: newWidget.data.id,
-              x: 0,
-              y: 0,
-              w: 6,
-              h: 10,
-            } as any);
-        console.log("55555555555");
       }
     }
     setOpen(false);
@@ -183,6 +174,23 @@ const AddWidget = () => {
                   </FormItem>
                 )}
               />
+              {/* Title */}
+              <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem className="flex gap-2">
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="max-w-max"
+                          placeholder="Enter title..."
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               {/* Group Name */}
               <div>
                 <div className="grid gap-3 grid-cols-2">

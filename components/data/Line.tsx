@@ -111,6 +111,7 @@ const Line = ({ options }) => {
         ref={chartRef}
         option={formattedOption}
         style={{ width: "100%", height: "100%" }}
+        className="px-5"
       />
     </>
   );
