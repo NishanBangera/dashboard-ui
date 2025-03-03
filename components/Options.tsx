@@ -1,4 +1,4 @@
-import { LayoutGrid, ListFilter, Share2 } from "lucide-react";
+import { ListFilter, Share2 } from "lucide-react";
 import { Button } from "./ui/button";
 import AddWidget from "./AddWidget";
 

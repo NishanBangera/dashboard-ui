@@ -3,25 +3,47 @@
 import RadarChart from "./data/Radar";
 
 import { Responsive, WidthProvider } from "react-grid-layout";
-import ReactECharts from "echarts-for-react";
 import Line from "./data/Line";
 import Pie from "./data/Pie";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchAllDashboards } from "@/lib/actions/dashboard.action";
+import { LayoutConfig, updateLayoutConfig } from "@/lib/actions/layout.action";
+import { Card } from "./ui/card";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
 const DashboardGrid = () => {
-  const layouts = {
-    lg: [
-      { i: "1", x:0,y:0,w: 6, h: 7 },
-      { i: "2",x:6,y:0, w: 6, h: 7 },
-      { i: "3", x:0,y:0,w: 6, h: 7 },
-    ],
-  };
+  const queryClient = useQueryClient();
+  const {data} = useQuery({
+    queryKey: ["fetchDashboards"],
+    queryFn: () => fetchAllDashboards("d1d26628-8052-466a-9c33-0f67a56e1119")
+  })
+
+  const updateLayout = useMutation({
+    mutationFn: (data) => updateLayoutConfig(data, "2514d2c7-a01e-4df5-a1df-25ed9f7654bf"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["fetchDashboards"] });
+    },
+  });
+
+
+   
+  
+  if(!data?.data) return <div></div>;
+  console.log("dashboards",data)
+  const strucutredData = {
+    ...data.data[0],
+    layouts: [{ config: data.data[0].layouts[0].config as LayoutConfig }]
+  }
+  // data.data[0].layouts[0].config = data?.data[0]?.layouts[0].config as LayoutConfig
+
   const handleLayoutChange = (layout, layouts) => {
     console.log("layout", layout);
     console.log("layouts", layouts);
+    updateLayout.mutate(layouts)
+
   };
     // const option = {
     //   title: {
@@ -94,80 +116,80 @@ const DashboardGrid = () => {
     //   ]
     // };
 
-  const option1 = {
-    legend: {
-      data: [
-        { name: "Test1", icon: "diamond" },
-        { name: "Test2", icon: "diamond" },
-      ],
-    },
-    tooltip: {
-      trigger: "axis",
-      padding: 0,
-      borderWidth: 0,
-      borderRadius: 20,
-      backgroundColor: "transparent",
-      formatter: function (params) {
-        let content = `
-          <div class="relative bg-black shadow-lg rounded-lg p-3 border border-gray-200">
-            <div class="font-semibold text-white pb-1 mb-2">${params[0].axisValue}</div>
-            <div class="flex flex-col space-y-1">`;
+  // const option1 = {
+  //   legend: {
+  //     data: [
+  //       { name: "Test1", icon: "diamond" },
+  //       { name: "Test2", icon: "diamond" },
+  //     ],
+  //   },
+  //   tooltip: {
+  //     trigger: "axis",
+  //     padding: 0,
+  //     borderWidth: 0,
+  //     borderRadius: 20,
+  //     backgroundColor: "transparent",
+  //     formatter: function (params) {
+  //       let content = `
+  //         <div class="relative bg-black shadow-lg rounded-lg p-3 border border-gray-200">
+  //           <div class="font-semibold text-white pb-1 mb-2">${params[0].axisValue}</div>
+  //           <div class="flex flex-col space-y-1">`;
 
-        params.forEach((item) => {
-          content += `
-            <div class="flex items-center space-x-3">
-            <div class="flex items-center">
-              <span class="w-3 h-3 rounded-full" style="background:${item.color}"></span>
-              <span class="ml-2 text-slate-500 ">${item.seriesName}:</span>
-            </div>
-              <span class="ml-auto font-bold text-white">$${item.value}</span>
-            </div>`;
-        });
+  //       params.forEach((item) => {
+  //         content += `
+  //           <div class="flex items-center space-x-3">
+  //           <div class="flex items-center">
+  //             <span class="w-3 h-3 rounded-full" style="background:${item.color}"></span>
+  //             <span class="ml-2 text-slate-500 ">${item.seriesName}:</span>
+  //           </div>
+  //             <span class="ml-auto font-bold text-white">$${item.value}</span>
+  //           </div>`;
+  //       });
 
-        content += `</div>
-          <div class="absolute -right-3 top-1/12 transform -translate-x-1/2 w-4 h-4 bg-black border-gray-200 rotate-45"></div>
-          </div>`;
+  //       content += `</div>
+  //         <div class="absolute -right-3 top-1/12 transform -translate-x-1/2 w-4 h-4 bg-black border-gray-200 rotate-45"></div>
+  //         </div>`;
 
-        return content;
-      },
-      show: true,
-      showContent: true,
-    },
-    xAxis: {
-      type: "category",
-      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+  //       return content;
+  //     },
+  //     show: true,
+  //     showContent: true,
+  //   },
+  //   xAxis: {
+  //     type: "category",
+  //     data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
 
-      splitLine: {
-        show: true,
-      },
-    },
-    yAxis: {
-      type: "value",
-      axisLabel: {
-        formatter: "${value}",
-      },
-      interval: 200,
-      splitLine: {
-        show: false,
-      },
-    },
-    grid: {
-      show: true,
-      backgroundColor: "#ffffff",
-    },
-    series: [
-      {
-        name: "Test1",
-        data: [150, 230, 224, 218, 135, 147, 260],
-        type: "line",
-      },
-      {
-        name: "Test2",
-        data: [350, 230, 224, 218, 135, 147, 260],
-        type: "line",
-      },
-    ],
-  };
+  //     splitLine: {
+  //       show: true,
+  //     },
+  //   },
+  //   yAxis: {
+  //     type: "value",
+  //     axisLabel: {
+  //       formatter: "${value}",
+  //     },
+  //     interval: 200,
+  //     splitLine: {
+  //       show: false,
+  //     },
+  //   },
+  //   grid: {
+  //     show: true,
+  //     backgroundColor: "#ffffff",
+  //   },
+  //   series: [
+  //     {
+  //       name: "Test1",
+  //       data: [150, 230, 224, 218, 135, 147, 260],
+  //       type: "line",
+  //     },
+  //     {
+  //       name: "Test2",
+  //       data: [350, 230, 224, 218, 135, 147, 260],
+  //       type: "line",
+  //     },
+  //   ],
+  // };
 
 // const option2  = {
 //     title: {
@@ -238,10 +260,13 @@ const DashboardGrid = () => {
 //       }
 //     ]
 //   };
+
+console.log("finallllllll",strucutredData.layouts[0]?.config.layouts)
   return (
+    // <div></div>
     <ResponsiveGridLayout
-      className="layout"
-      layouts={layouts}
+      className="grid gap-5"
+      layouts={strucutredData.layouts[0]?.config.layouts ? strucutredData?.layouts[0]?.config.layouts : {lg:[]}}
       breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
       cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
       rowHeight={30}
@@ -249,15 +274,15 @@ const DashboardGrid = () => {
       isResizable={true}
       onLayoutChange={handleLayoutChange}
     >
-      <div key="1">
-      <RadarChart />
-      </div>
-      <div key="2">
-      <Line />
-      </div>
-      <div key="3">
-      <Pie />
-      </div>
+      {data?.data[0].widgets.map((widget) => {
+        return (
+          <Card key={widget.id} className="">
+            {widget.widgetType.name === "LineChart" && <Line options={widget.config}/>}
+            {widget.widgetType.name === "RadarChart" && <RadarChart options={widget.config}/>}
+            {widget.widgetType.name === "PieChart" && <Pie options={widget.config}/>}
+          </Card>
+        )
+      })}
       
     </ResponsiveGridLayout>
   );

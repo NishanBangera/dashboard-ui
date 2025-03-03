@@ -24,7 +24,7 @@ const Sidebar = () => {
         </div>
         <Menu size={16} className="text-slate-500" />
       </div>
-      <div className="flex flex-col px-2 gap-3">
+      <div className="flex flex-col px-2 gap-5">
         <p className="text-xs text-slate-500">MAIN MENU</p>
         <div className="flex space-x-3 items-center">
           <LayoutGrid size={14} className="text-slate-500" />

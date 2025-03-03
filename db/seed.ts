@@ -3,158 +3,177 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+// Create Dashboard
+//  const dashboard = await prisma.dashboard.create({
+//    data: {  
+//       name: "Dashboard1",
+//       description: "Overview of Dashboard1",
+//       isDefault: true,
+//       userId: "d1d26628-8052-466a-9c33-0f67a56e1119",
+//     },
+//   });
+
+await prisma.layout.create({
+    data: {
+      name: "Default",
+      dashboardId: "0c98b537-fbc0-47e4-a9ac-396e0b19664c",
+      config: {
+        cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+        rowHeight: 30,
+        layouts:{
+          lg:[]
+        }
+      },
+    },
+  });
+
+
   // Create widget types
-  const radarChartWidget = await prisma.widgetType.create({
-    data: {
-      name: "RadarChart",
-      description: "Display data as a radar chart",
-      icon: "RadarChart",
-      config: {
-        title: {
-          text: "Basic Radar Chart",
-        },
-        color: [
-          "#0f5209",
-          "#f09e07",
-          "#bfbbba",
-          "#456ad9",
-          "#8a28bf",
-          "#bf28a9",
-        ],
-        radar: {
-          startAngle: 0,
-          splitNumber: 2,
-          splitLine: {
-            show: true,
-          },
-          splitArea: {
-            show: false,
-          },
-        },
-      },
-    },
-  });
+  // const radarChartWidget = await prisma.widgetType.create({
+  //   data: {
+  //     name: "RadarChart",
+  //     description: "Display data as a radar chart",
+  //     icon: "RadarChart",
+  //     config: {
+  //       title: {
+  //         text: "Basic Radar Chart",
+  //       },
+  //       color: [
+  //         "#0f5209",
+  //         "#f09e07",
+  //         "#bfbbba",
+  //         "#456ad9",
+  //         "#8a28bf",
+  //         "#bf28a9",
+  //       ],
+  //       radar: {
+  //         startAngle: 0,
+  //         splitNumber: 2,
+  //         splitLine: {
+  //           show: true,
+  //         },
+  //         splitArea: {
+  //           show: false,
+  //         },
+  //       },
+  //     },
+  //   },
+  // });
 
-  const lineChartWidget = await prisma.widgetType.create({
-    data: {
-      name: "LineChart",
-      description: "Display data as a line chart",
-      icon: "LineChart",
-      config: {
-        legend: {
-          data: [
-            { name: "Test1", icon: "diamond" },
-            { name: "Test2", icon: "diamond" },
-          ],
-        },
-        color: [
-          "#0f5209",
-          "#f09e07",
-          "#bfbbba",
-          "#456ad9",
-          "#8a28bf",
-          "#bf28a9",
-        ],
-        tooltip: {
-          trigger: "axis",
-          padding: 0,
-          borderWidth: 0,
-          borderRadius: 20,
-          backgroundColor: "transparent",
-          show: true,
-          showContent: true,
-        },
-        xAxis: {
-          splitLine: {
-            show: true,
-          },
-        },
-        yAxis: {
-          type: "value",
-          axisLabel: {
-            formatter: "${value}",
-          },
-          interval: 200,
-          splitLine: {
-            show: false,
-          },
-        },
-        grid: {
-          show: true,
-          backgroundColor: "#ffffff",
-        },
-        series: [],
-      },
-    },
-  });
+  // const lineChartWidget = await prisma.widgetType.create({
+  //   data: {
+  //     name: "LineChart",
+  //     description: "Display data as a line chart",
+  //     icon: "LineChart",
+  //     config: {
+  //       color: [
+  //         "#0f5209",
+  //         "#f09e07",
+  //         "#bfbbba",
+  //         "#456ad9",
+  //         "#8a28bf",
+  //         "#bf28a9",
+  //       ],
+  //       tooltip: {
+  //         trigger: "axis",
+  //         padding: 0,
+  //         borderWidth: 0,
+  //         borderRadius: 20,
+  //         backgroundColor: "transparent",
+  //         show: true,
+  //         showContent: true,
+  //       },
+  //       xAxis: {
+  //         splitLine: {
+  //           show: true,
+  //         },
+  //       },
+  //       yAxis: {
+  //         type: "value",
+  //         axisLabel: {
+  //           formatter: "${value}",
+  //         },
+  //         interval: 200,
+  //         splitLine: {
+  //           show: false,
+  //         },
+  //       },
+  //       grid: {
+  //         show: true,
+  //         backgroundColor: "#ffffff",
+  //       },
+  //       series: [],
+  //     },
+  //   },
+  // });
 
-  const pieChartWidget = await prisma.widgetType.create({
-    data: {
-      name: "PieChart",
-      description: "Display data as a pie chart",
-      icon: "PieChart",
-      config: {
-        tooltip: {
-          trigger: "item",
-          formatter: "{a} <br/>{b}: {c} ({d}%)",
-        },
-        legend: {
-          show: false,
-        },
-        color: [
-          "#0f5209",
-          "#f09e07",
-          "#bfbbba",
-          "#456ad9",
-          "#8a28bf",
-          "#bf28a9",
-        ],
-        series: [
-          {
-            name: "Traffic Source",
-            type: "pie",
-            radius: ["50%", "70%"],
-            avoidLabelOverlap: true,
-            label: {
-              show: true,
+  // const pieChartWidget = await prisma.widgetType.create({
+  //   data: {
+  //     name: "PieChart",
+  //     description: "Display data as a pie chart",
+  //     icon: "PieChart",
+  //     config: {
+  //       tooltip: {
+  //         trigger: "item",
+  //         formatter: "{a} <br/>{b}: {c} ({d}%)",
+  //       },
+  //       legend: {
+  //         show: false,
+  //       },
+  //       color: [
+  //         "#0f5209",
+  //         "#f09e07",
+  //         "#bfbbba",
+  //         "#456ad9",
+  //         "#8a28bf",
+  //         "#bf28a9",
+  //       ],
+  //       series: [
+  //         {
+  //           name: "Traffic Source",
+  //           type: "pie",
+  //           radius: ["50%", "70%"],
+  //           avoidLabelOverlap: true,
+  //           label: {
+  //             show: true,
 
-              rich: {
-                a: {
-                  color: "#333",
-                  fontSize: 14,
-                  lineHeight: 20,
-                  fontWeight: "bold",
-                  align: "center",
-                },
-                b: {
-                  color: "#666",
-                  fontSize: 12,
-                  lineHeight: 20,
-                  align: "center",
-                },
-              },
-            },
-            labelLine: {
-              lineStyle: {
-                color: "black",
-                width: 2,
-                cap: "round",
-              },
-              length: 50,
-            },
-          },
-        ],
-      },
-    },
-  });
+  //             rich: {
+  //               a: {
+  //                 color: "#333",
+  //                 fontSize: 14,
+  //                 lineHeight: 20,
+  //                 fontWeight: "bold",
+  //                 align: "center",
+  //               },
+  //               b: {
+  //                 color: "#666",
+  //                 fontSize: 12,
+  //                 lineHeight: 20,
+  //                 align: "center",
+  //               },
+  //             },
+  //           },
+  //           labelLine: {
+  //             lineStyle: {
+  //               color: "black",
+  //               width: 2,
+  //               cap: "round",
+  //             },
+  //             length: 50,
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   },
+  // });
 
   // Create a test user
-  const user = await prisma.user.create({
-    data: {
-      email: "test@example.com",
-      name: "Test User",
-    },
-  });
+  // const user = await prisma.user.create({
+  //   data: {
+  //     email: "test@example.com",
+  //     name: "Test User",
+  //   },
+  // });
 
   // Create a dashboard
   // const dashboard = await prisma.dashboard.create({
