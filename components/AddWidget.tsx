@@ -5,7 +5,6 @@ import { LayoutGrid } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -37,12 +36,12 @@ const AddWidget = ({
   dashboardWidgetId,
   handleMenu,
   data: dataValues,
-  title
+  title,
 }: {
   dashboardWidgetId?: string;
   handleMenu?: () => void;
   data?: z.infer<typeof addWidgetSchema>;
-  ttile?:string
+  title?: string;
 }) => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -75,16 +74,17 @@ const AddWidget = ({
 
   const form = useForm({
     resolver: zodResolver(addWidgetSchema),
-    defaultValues: dataValues
-      ? {...dataValues,title}
-      : {
-          widgetType: "",
-          groupName: [{ name: "" }],
-          maxValue: "",
-          title: "",
-          items: [{ name: "" }],
-          groupValueFields: [{ values: [""] }],
-        },
+    defaultValues:
+      dataValues && title
+        ? { ...dataValues, title }
+        : {
+            widgetType: "",
+            groupName: [{ name: "" }],
+            maxValue: "",
+            title: "",
+            items: [{ name: "" }],
+            groupValueFields: [{ values: [""] }],
+          },
   });
 
   const watchWidgetType = form.watch("widgetType");
@@ -133,7 +133,7 @@ const AddWidget = ({
       widgetTypeId: values.widgetType,
       dashboardId: dashboard.data.id,
     };
-    console.log("sqwwwwwwwwww",strucutredData)
+    console.log("sqwwwwwwwwww", strucutredData);
     if (dataValues && handleMenu) {
       updateWidget.mutate(strucutredData as any);
       handleMenu();
@@ -145,22 +145,29 @@ const AddWidget = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen && handleMenu) {
+          handleMenu();
+        }
+        setOpen(isOpen);
+      }}
+    >
       <DialogTrigger asChild>
         {dataValues ? (
           <Button onClick={() => setOpen(true)}>Edit</Button>
         ) : (
           <Button
-          variant="outline"
-          className="py-0 has-[>svg]:px-1 h-6 gap-1 border-t-2 border-gray-300"
-          onClick={() => setOpen(true)}
-        >
-          <LayoutGrid size={14} className="text-slate-500" />
-          
+            variant="outline"
+            className="py-0 has-[>svg]:px-1 h-6 gap-1 border-t-2 border-gray-300"
+            onClick={() => setOpen(true)}
+          >
+            <LayoutGrid size={14} className="text-slate-500" />
+
             <span className="text-[10px] text-slate-500">Customize Widget</span>
-        </Button>
+          </Button>
         )}
-        
       </DialogTrigger>
       <DialogContent className="sm:max-w-[768px] max-h-[90vh] overflow-auto">
         <Form {...form}>
