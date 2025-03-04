@@ -62,7 +62,6 @@ const AddWidget = ({
   });
 
   const pieWidget = data?.data?.find((widget) => widget.name === "PieChart");
-  console.log("checkkk", pieWidget);
 
   const { mutateAsync: createDashboardWidget } = useMutation({
     mutationFn: createWidget,
@@ -77,8 +76,6 @@ const AddWidget = ({
       queryClient.invalidateQueries({ queryKey: ["fetchDashboards"] });
     },
   });
-
-  console.log("dashboard..........", dashboard);
 
   const form = useForm({
     resolver: zodResolver(addWidgetSchema),
@@ -96,7 +93,6 @@ const AddWidget = ({
   });
 
   const watchWidgetType = form.watch("widgetType");
-  console.log("watchhhhhhhhhh", watchWidgetType);
 
   const {
     fields: groupFields,
@@ -125,23 +121,17 @@ const AddWidget = ({
     control: form.control,
     name: "groupValueFields",
   });
-  console.log("groupValueFields", groupValueFields);
-  console.log("groupFieldsLength", groupValueFields[0].values.length);
+
 
   const onSubmit: SubmitHandler<z.infer<typeof addWidgetSchema>> = async (
     values
   ) => {
-    console.log("values", values);
-    console.log("dataaaaaaaaaaaaa", data?.data);
-    console.log("1111111");
-    // const config = chartConfig(values, data.data);
     const strucutredData = {
       title: values.title,
       data: values,
       widgetTypeId: values.widgetType,
       dashboardId: dashboard.data.id,
     };
-    console.log("sqwwwwwwwwww", strucutredData);
     if (dataValues && handleMenu) {
       updateWidget.mutate(strucutredData as any);
       handleMenu();

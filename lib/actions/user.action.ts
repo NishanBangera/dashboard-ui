@@ -12,9 +12,6 @@ export async function fetchUser({
   email: string;
   username: string;
 }) {
-  console.log("iddddd", id)
-  console.log("email", email)
-  console.log("username", username)
   if(!id || !email){
     return {success:false}
   }

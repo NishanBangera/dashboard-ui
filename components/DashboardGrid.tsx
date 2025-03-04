@@ -26,9 +26,6 @@ const DashboardGrid = () => {
   const queryClient = useQueryClient();
   const { user } = useUser();
 
-  console.log("userrrrr", user?.emailAddresses);
-  console.log("userrrrr2", user?.primaryEmailAddress?.emailAddress);
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const upsertingUser = useQuery({
     queryKey: ["user"],
@@ -66,15 +63,13 @@ const DashboardGrid = () => {
       </div>
     );
   if (!dashboard?.data) return <div></div>;
-  console.log("dashboards", dashboard.data);
+
   const strucutredData = {
-    ...dashboard.data,
-    layouts: dashboard.data.layouts as Layout[],
+    ...dashboard?.data,
+    layouts: dashboard?.data?.layouts as Layout[],
   };
 
   const handleLayoutChange = (layout, layouts) => {
-    console.log("layout", layout);
-    console.log("layouts", layouts);
     const modifiedLayouts = {
       lg: layouts.lg.map((layout) => {
         return {
@@ -86,11 +81,9 @@ const DashboardGrid = () => {
         };
       }),
     };
-    console.log(modifiedLayouts);
 
     updateLayout.mutate(modifiedLayouts as any);
   };
-  console.log("finallllllll", strucutredData.layouts[0]);
 
   return (
     <ResponsiveGridLayout
@@ -108,7 +101,7 @@ const DashboardGrid = () => {
       draggableCancel=".no-drag"
       onLayoutChange={handleLayoutChange}
     >
-      {dashboard.data.widgets.map((widget) => {
+      {dashboard?.data?.widgets.map((widget) => {
         return (
           <Card key={widget.id} className="">
             <div className="flex justify-between px-5">

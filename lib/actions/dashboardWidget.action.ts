@@ -75,7 +75,6 @@ export async function deleteDashboardWidget(dashboardWidgetId, dashboardId) {
 }
 
 export async function updateDashboardWidget(data,id){
-  console.log("dataaaaaaaaaaa",data)
   try {
     await prisma.dashboardWidget.update({
       where:{

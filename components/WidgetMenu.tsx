@@ -20,7 +20,6 @@ const WidgetMenu = ({
   const handleMenu = () => {
     setOpen(false);
   };
-  console.log("hulkkkkkkkkkkkkkkkkkkkkkk",data)
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger>

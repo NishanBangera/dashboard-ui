@@ -10,11 +10,3 @@ export type Layout = {
       i: string;
     }[];
   };
-
-// export type DashboardWidget = {
-//     id: string,
-//     title: string,
-//     config: z.infer<typeof addWidgetSchema>,
-//     dashboardId: string,
-//     widgetTypeId: string
-// }

@@ -1,14 +1,12 @@
-import React, { useRef } from "react";
 import ReactECharts from "echarts-for-react";
 
 const RadarChart = ({ data }) => {
-  const chartRef = useRef<ReactECharts>(null);
   const indicatorNames = data.items.map((item) => item.name);
   const allSeriesData = data.groupValueFields.map((group, index) => ({
     name: data.groupName[index].name,
     value: group.values.map((value) => Number(value)),
   }));
-  console.log("bvvvvvvvv", allSeriesData);
+
   const formattedOptions = {
     legend: {
       data: data.groupName.map((group) => ({
@@ -77,10 +75,9 @@ const RadarChart = ({ data }) => {
       },
     ],
   };
-  console.log("formattedOptions", formattedOptions);
+
   return (
     <ReactECharts
-      ref={chartRef}
       option={formattedOptions}
       style={{ width: "100%", height: "100%" }}
       className="px-5"
