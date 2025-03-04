@@ -73,3 +73,20 @@ export async function deleteDashboardWidget(dashboardWidgetId, dashboardId) {
     return { success: false, error: formatError(error) };
   }
 }
+
+export async function updateDashboardWidget(data,id){
+  console.log("dataaaaaaaaaaa",data)
+  try {
+    await prisma.dashboardWidget.update({
+      where:{
+        id
+      },
+      data:{
+        title:data.title,
+        data:data.data
+      }
+    })
+  } catch (error) {
+    return { success: false, error: formatError(error) }
+  }
+}

@@ -5,6 +5,7 @@ import { LayoutGrid } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -27,9 +28,22 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
 import { addWidgetSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { createWidget } from "@/lib/actions/dashboardWidget.action";
+import {
+  createWidget,
+  updateDashboardWidget,
+} from "@/lib/actions/dashboardWidget.action";
 
-const AddWidget = () => {
+const AddWidget = ({
+  dashboardWidgetId,
+  handleMenu,
+  data: dataValues,
+  title
+}: {
+  dashboardWidgetId?: string;
+  handleMenu?: () => void;
+  data?: z.infer<typeof addWidgetSchema>;
+  ttile?:string
+}) => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
@@ -50,18 +64,27 @@ const AddWidget = () => {
     },
   });
 
+  const updateWidget = useMutation({
+    mutationFn: (data) => updateDashboardWidget(data, dashboardWidgetId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["fetchDashboards"] });
+    },
+  });
+
   console.log("dashboard..........", dashboard);
 
   const form = useForm({
     resolver: zodResolver(addWidgetSchema),
-    defaultValues: {
-      widgetType: "",
-      groupName: [{ name: "" }],
-      maxValue: "",
-      title: "",
-      items: [{ name: "" }],
-      groupValueFields: [{ values: [""] }],
-    },
+    defaultValues: dataValues
+      ? {...dataValues,title}
+      : {
+          widgetType: "",
+          groupName: [{ name: "" }],
+          maxValue: "",
+          title: "",
+          items: [{ name: "" }],
+          groupValueFields: [{ values: [""] }],
+        },
   });
 
   const watchWidgetType = form.watch("widgetType");
@@ -101,17 +124,20 @@ const AddWidget = () => {
     values
   ) => {
     console.log("values", values);
-    console.log("data", data?.data);
-    if (data?.data) {
-      console.log("1111111");
-      // const config = chartConfig(values, data.data);
-      const strucutredData = {
-        title: values.title,
-        data: values,
-        widgetTypeId: values.widgetType,
-        dashboardId: dashboard.data.id,
-      };
-      console.log("22222222222");
+    console.log("dataaaaaaaaaaaaa", data?.data);
+    console.log("1111111");
+    // const config = chartConfig(values, data.data);
+    const strucutredData = {
+      title: values.title,
+      data: values,
+      widgetTypeId: values.widgetType,
+      dashboardId: dashboard.data.id,
+    };
+    console.log("sqwwwwwwwwww",strucutredData)
+    if (dataValues && handleMenu) {
+      updateWidget.mutate(strucutredData as any);
+      handleMenu();
+    } else {
       await createDashboardWidget(strucutredData as any);
     }
     setOpen(false);
@@ -121,14 +147,20 @@ const AddWidget = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
+        {dataValues ? (
+          <Button onClick={() => setOpen(true)}>Edit</Button>
+        ) : (
+          <Button
           variant="outline"
           className="py-0 has-[>svg]:px-1 h-6 gap-1 border-t-2 border-gray-300"
           onClick={() => setOpen(true)}
         >
           <LayoutGrid size={14} className="text-slate-500" />
-          <span className="text-[10px] text-slate-500">Customize Widget</span>
+          
+            <span className="text-[10px] text-slate-500">Customize Widget</span>
         </Button>
+        )}
+        
       </DialogTrigger>
       <DialogContent className="sm:max-w-[768px] max-h-[90vh] overflow-auto">
         <Form {...form}>
@@ -154,6 +186,7 @@ const AddWidget = () => {
                           form.setValue("title", "");
                           field.onChange(value);
                         }}
+                        defaultValue={field.value}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Widget Type" />

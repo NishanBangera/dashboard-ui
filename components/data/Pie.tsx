@@ -73,7 +73,7 @@ const Pie = ({ data }) => {
   //     },
   //   ],
   // };
-
+  console.log("checxxxxxxxxxxx", data)
   const formattedOption = {
     tooltip: {
       trigger: "item",

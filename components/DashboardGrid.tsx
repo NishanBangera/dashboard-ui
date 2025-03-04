@@ -99,7 +99,7 @@ const DashboardGrid = () => {
           <Card key={widget.id} className="">
             <div className="flex justify-between px-5">
               <p>{widget.title}</p>
-              <WidgetMenu dashboardWidgetId={widget.id} dashboardId={dashboard?.data?.id || ''} />
+              <WidgetMenu dashboardWidgetId={widget.id} dashboardId={dashboard?.data?.id || ''} data={widget.data} title={widget.title}/>
             </div>
             {widget.widgetType.name === "LineChart" && (
               <Line data={widget.data} />
