@@ -1,17 +1,40 @@
 import React, { useRef } from "react";
 import ReactECharts from "echarts-for-react";
 
-const RadarChart = ({options}) => {
+const RadarChart = ({ data }) => {
   const chartRef = useRef<ReactECharts>(null);
-  console.log("optionsRRRRR ", options)
-  const indicatorNames = options.radar.indicator.map((ind) => ind.name);
-  const allSeriesData = options.series[0].data
-  console.log("bvvvvvvvv",allSeriesData)
+  const indicatorNames = data.items.map((item) => item.name);
+  const allSeriesData = data.groupValueFields.map((group, index) => ({
+    name: data.groupName[index].name,
+    value: group.values.map((value) => Number(value)),
+  }));
+  console.log("bvvvvvvvv", allSeriesData);
   const formattedOptions = {
-    ...options,
-    radar:{
-      ...options.radar,
-      axisName:{
+    legend: {
+      data: data.groupName.map((group) => ({
+        name: group.name,
+        icon: "diamond",
+      })),
+    },
+    color: ["#0f5209", "#f09e07", "#bfbbba", "#456ad9", "#8a28bf", "#bf28a9"],
+    radar: {
+      indicator: data.items.map((item) => ({
+        name: item.name,
+        max: Number(data.maxValue),
+      })),
+      startAngle: 0,
+      splitNumber: 2,
+      splitLine: {
+        lineStyle: {
+          color: "gray", 
+          width: 2,
+          type: "solid",
+        },
+      },
+      splitArea: {
+        show: false,
+      },
+      axisName: {
         formatter: function (value) {
           const index = indicatorNames.indexOf(value);
           if (index !== -1) {
@@ -42,24 +65,24 @@ const RadarChart = ({options}) => {
           b1: { color: "#91cc75", padding: 4, fontSize: 12 },
         },
       },
-      splitArea:{
-        show:true
-      },
-      splitLine: {
-        lineStyle: {
-            color: 'gray', // Change line color
-            width: 2,      // Line width
-            type: '' // Line style: 'solid', 'dashed', 'dotted'
-        }
     },
-      splitNumber:2
-  }}
-  console.log("formattedOptions", formattedOptions)
+    series: [
+      {
+        type: "radar",
+        data: data.groupValueFields.map((group, index) => ({
+          name: data.groupName[index].name,
+          value: group.values.map((value) => Number(value)),
+          areaStyle:{},
+        })),
+      },
+    ],
+  };
+  console.log("formattedOptions", formattedOptions);
   return (
     <ReactECharts
       ref={chartRef}
       option={formattedOptions}
-      style={{ width: "100%", height: "100%" }} 
+      style={{ width: "100%", height: "100%" }}
       className="px-5"
     />
   );

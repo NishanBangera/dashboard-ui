@@ -3,29 +3,40 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-// Create Dashboard
-//  const dashboard = await prisma.dashboard.create({
-//    data: {  
-//       name: "Dashboard1",
-//       description: "Overview of Dashboard1",
-//       isDefault: true,
-//       userId: "d1d26628-8052-466a-9c33-0f67a56e1119",
-//     },
-//   });
+// Create Widget
+const widget = await prisma.widgetType.createMany({
+  data: [
+    {name: "LineChart"},
+    {name: "PieChart"},
+    {name: "RadarChart"},
+  ]
+})
 
-await prisma.layout.create({
-    data: {
-      name: "Default",
-      dashboardId: "0c98b537-fbc0-47e4-a9ac-396e0b19664c",
-      config: {
-        cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
-        rowHeight: 30,
-        layouts:{
-          lg:[]
-        }
-      },
+// Create Dashboard
+ const dashboard = await prisma.dashboard.create({
+   data: {  
+      name: "Dashboard1",
+      description: "Overview of Dashboard1",
+      isDefault: true,
+      userId: "d1d26628-8052-466a-9c33-0f67a56e1119",
     },
   });
+
+
+
+// await prisma.layout.create({
+//     data: {
+//       name: "Default",
+//       dashboardId: "0c98b537-fbc0-47e4-a9ac-396e0b19664c",
+//       config: {
+//         cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+//         rowHeight: 30,
+//         layouts:{
+//           lg:[]
+//         }
+//       },
+//     },
+//   });
 
 
   // Create widget types

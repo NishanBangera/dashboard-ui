@@ -1,27 +1,48 @@
 "use server";
 
 import { prisma } from "@/db/prisma";
-import { convertToPlainObject, formatError } from "../utils";
-import { LayoutConfig } from "./layout.action";
+import { formatError } from "../utils";
+import { Layout } from "@/types";
 
 export async function createWidget(data) {
   try {
-    const widget = await prisma.dashboardWidget.create({
-      data: {
-        title: data.title,
-        config: data.config,
-        dashboardId: data.dashboardId,
-        widgetTypeId: data.widgetTypeId,
-      },
-    });
-    const structureData = convertToPlainObject(widget);
-    return { success: true, data: structureData };
+    await prisma.$transaction(async(tx) => {
+      const dashboardWidget = await tx.dashboardWidget.create({
+        data: {
+          title: data.title,
+          data: data.data,
+          dashboardId: data.dashboardId,
+          widgetTypeId: data.widgetTypeId,
+        },
+      });
+
+      const dashboard = await tx.dashboard.findFirst({
+        where:{
+          id: dashboardWidget.dashboardId
+        }
+      })
+
+      if (dashboard === null) {
+        return { success: false, error: "Dashboard not found" };
+      }
+
+      const formattedDashboard = {...dashboard,layouts:dashboard.layouts as Layout[]} 
+      await tx.dashboard.update({
+        where:{
+          id: dashboard?.id
+        },
+        data:{
+          layouts:[{lg:[...formattedDashboard.layouts[0].lg, {i:dashboardWidget.id,x:0,y:0,w:5,h:7}]}]
+        }
+      })
+    })
+    return { success: true };
   } catch (error) {
     return { success: false, error: formatError(error) };
   }
 }
 
-export async function deleteDashboardWidget(dashboardWidgetId, layoutId) {
+export async function deleteDashboardWidget(dashboardWidgetId, dashboardId) {
   try {
     await prisma.$transaction(async (tx) => {
       await tx.dashboardWidget.delete({
@@ -29,21 +50,21 @@ export async function deleteDashboardWidget(dashboardWidgetId, layoutId) {
       });
 
       //remove deleted widget position from layout
-      const layout = await tx.layout.findFirst({
+      const dashboard = await tx.dashboard.findFirst({
         where: {
-          id: layoutId,
+          id: dashboardId,
         },
       });
-      const layoutData = { ...layout, config: layout?.config as LayoutConfig };
-      const filteredGridLayout = layoutData?.config.layouts.lg.filter(
+      const layoutData = { layouts: dashboard?.layouts as Layout[] };
+      const filteredGridLayout = layoutData?.layouts[0].lg.filter(
         (item) => item.i !== dashboardWidgetId
       );
-      await prisma.layout.update({
+      await prisma.dashboard.update({
         where: {
-          id: layoutId,
+          id: dashboardId,
         },
         data: {
-          config: { ...layoutData.config, layouts: { lg: filteredGridLayout } },
+          layouts: [{lg:filteredGridLayout}],
         },
       });
     });

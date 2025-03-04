@@ -28,22 +28,12 @@ model Dashboard {
   name        String
   description String?
   isDefault   Boolean           @default(false)
+  layouts     Json[]            @default([]) @db.Json
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
   userId      String
   user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  layouts     Layout[]
   widgets     DashboardWidget[]
-}
-
-model Layout {
-  id          String    @id @default(uuid())
-  name        String    @default("Default")
-  config      Json      @db.Json // Stores the grid layout configuration
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  dashboardId String
-  dashboard   Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
 }
 
 model WidgetType {
@@ -51,7 +41,6 @@ model WidgetType {
   name        String            @unique
   description String?
   icon        String?
-  config      Json              @db.Json // Default configuration
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
   widgets     DashboardWidget[]
@@ -60,7 +49,7 @@ model WidgetType {
 model DashboardWidget {
   id           String     @id @default(uuid())
   title        String
-  config       Json       @db.Json // Widget-specific configuration
+  data         Json       @db.Json // stores data
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   dashboardId  String

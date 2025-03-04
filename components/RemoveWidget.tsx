@@ -5,13 +5,13 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteDashboardWidget } from "@/lib/actions/dashboardWidget.action";
 
-const RemoveWidget = ({dashboardWidgetId,layoutId}:{dashboardWidgetId:string;layoutId: string;}) => {
+const RemoveWidget = ({dashboardWidgetId,dashboardId,handleMenu}:{dashboardWidgetId:string;dashboardId: string;handleMenu:() => void}) => {
       const [open,setOpen] = useState(false)
       const queryClient = useQueryClient()
 
       const deleteDashboardWidgetQuery = useMutation({
         mutationFn: () =>
-          deleteDashboardWidget(dashboardWidgetId,layoutId),
+          deleteDashboardWidget(dashboardWidgetId,dashboardId),
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["fetchDashboards"] });
         },
@@ -33,7 +33,11 @@ const RemoveWidget = ({dashboardWidgetId,layoutId}:{dashboardWidgetId:string;lay
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="no-drag">Cancel</AlertDialogCancel>
-            <Button className="no-drag" variant="destructive" size="sm" onClick={() => deleteDashboardWidgetQuery.mutate()}>
+            <Button className="no-drag" variant="destructive" size="sm" onClick={() => {
+              deleteDashboardWidgetQuery.mutate()
+              setOpen(false)
+              handleMenu()
+              }}>
               <Trash2 className="w-4 h-4 mr-2" />
               Delete
             </Button>

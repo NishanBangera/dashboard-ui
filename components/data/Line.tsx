@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import ReactECharts from "echarts-for-react";
-const Line = ({ options }) => {
+const Line = ({ data }) => {
   const chartRef = useRef(null);
   // const option = {
   //     legend: {
@@ -77,9 +77,21 @@ const Line = ({ options }) => {
   //     ],
   //   };
   const formattedOption = {
-    ...options,
+    legend: {
+      data: data.groupName.map((group) => ({
+        name: group.name,
+        icon: "diamond",
+      })),
+    },
+    color: ["#0f5209", "#f09e07", "#bfbbba", "#456ad9", "#8a28bf", "#bf28a9"],
     tooltip: {
-      ...options.tooltip,
+      trigger: "axis",
+      padding: 0,
+      borderWidth: 0,
+      borderRadius: 20,
+      backgroundColor: "transparent",
+      show: true,
+      showContent: true,
       formatter: function (params) {
         let content = `
             <div class="relative bg-black shadow-lg rounded-lg p-3 border border-gray-200">
@@ -104,6 +116,34 @@ const Line = ({ options }) => {
         return content;
       },
     },
+    xAxis: {
+      type: "category",
+      data: data.items.map((item) => item.name),
+      splitLine: {
+        show: true,
+      },
+    },
+    yAxis: {
+      type: "value",
+      axisLabel: {
+        formatter: "${value}",
+      },
+      interval: 200,
+      splitLine: {
+        show: false,
+      },
+    },
+    grid: {
+      show: true,
+      backgroundColor: "#ffffff",
+    },
+    series: data.groupValueFields.map((group, index) => {
+      return {
+        name: data.groupName[index].name,
+        type: "line",
+        data: group.values.map((value) => Number(value)),
+      };
+    }),
   };
   return (
     <>

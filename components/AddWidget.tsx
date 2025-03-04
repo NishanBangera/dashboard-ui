@@ -27,18 +27,21 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
 import { addWidgetSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { chartConfig } from "@/lib/utils";
 import { createWidget } from "@/lib/actions/dashboardWidget.action";
-import { addLayoutConfig } from "@/lib/actions/layout.action";
 
 const AddWidget = () => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
+  const dashboard: any = queryClient.getQueryData(["fetchDashboards"]);
+
   const { data } = useQuery({
     queryKey: ["widgets"],
     queryFn: fetchAllWidgets,
   });
+
+  const pieWidget = data?.data?.find((widget) => widget.name === "PieChart");
+  console.log("checkkk", pieWidget);
 
   const { mutateAsync: createDashboardWidget } = useMutation({
     mutationFn: (data) => createWidget(data),
@@ -47,13 +50,7 @@ const AddWidget = () => {
     },
   });
 
-  const addLayout = useMutation({
-    mutationFn: (data) =>
-      addLayoutConfig(data, "2514d2c7-a01e-4df5-a1df-25ed9f7654bf"),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fetchDashboards"] });
-    },
-  });
+  console.log("dashboard..........", dashboard);
 
   const form = useForm({
     resolver: zodResolver(addWidgetSchema),
@@ -61,13 +58,14 @@ const AddWidget = () => {
       widgetType: "",
       groupName: [{ name: "" }],
       maxValue: "",
-      title:"",
+      title: "",
       items: [{ name: "" }],
       groupValueFields: [{ values: [""] }],
     },
   });
 
   const watchWidgetType = form.watch("widgetType");
+  console.log("watchhhhhhhhhh", watchWidgetType);
 
   const {
     fields: groupFields,
@@ -106,29 +104,18 @@ const AddWidget = () => {
     console.log("data", data?.data);
     if (data?.data) {
       console.log("1111111");
-      const config = chartConfig(values, data.data);
+      // const config = chartConfig(values, data.data);
       const strucutredData = {
         title: values.title,
-        config,
+        data: values,
         widgetTypeId: values.widgetType,
-        dashboardId: "0c98b537-fbc0-47e4-a9ac-396e0b19664c",
+        dashboardId: dashboard.data.id,
       };
       console.log("22222222222");
-      const newWidget = await createDashboardWidget(strucutredData as any);
-      console.log("33333333333", newWidget);
-      console.log("44444444444", newWidget?.data);
-      if (newWidget?.data) {
-        addLayout.mutate({
-              i: newWidget.data.id,
-              x: 0,
-              y: 0,
-              w: 6,
-              h: 10,
-            } as any)
-      }
+      await createDashboardWidget(strucutredData as any);
     }
     setOpen(false);
-    form.reset()
+    form.reset();
   };
 
   return (
@@ -158,7 +145,16 @@ const AddWidget = () => {
                   <FormItem>
                     <FormLabel>Choose Widget Type</FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange}>
+                      <Select
+                        onValueChange={(value) => {
+                          form.setValue("groupName", [{ name: "" }]);
+                          form.setValue("groupValueFields", [{ values: [""] }]);
+                          form.setValue("items", [{ name: "" }]);
+                          form.setValue("maxValue", "");
+                          form.setValue("title", "");
+                          field.onChange(value);
+                        }}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Widget Type" />
                         </SelectTrigger>
@@ -176,21 +172,21 @@ const AddWidget = () => {
               />
               {/* Title */}
               <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem className="flex gap-2">
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input
-                          className="max-w-max"
-                          placeholder="Enter title..."
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem className="flex gap-2">
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="max-w-max"
+                        placeholder="Enter title..."
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
               {/* Group Name */}
               <div>
                 <div className="grid gap-3 grid-cols-2">
@@ -240,9 +236,7 @@ const AddWidget = () => {
                     });
                   }}
                   variant="outline"
-                  disabled={
-                    watchWidgetType === "770f5cd2-9a70-4d50-aca9-cc60f0e01bec"
-                  }
+                  disabled={watchWidgetType === pieWidget?.id}
                   className="mt-2"
                 >
                   Add Group
@@ -313,7 +307,7 @@ const AddWidget = () => {
                   Add Item
                 </Button>
               </div>
-              {watchWidgetType === "b1d28a0a-08f3-4422-b43e-3182c23c388b" && (
+              {watchWidgetType === pieWidget?.id && (
                 <FormField
                   control={form.control}
                   name="maxValue"

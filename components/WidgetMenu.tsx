@@ -6,12 +6,15 @@ import RemoveWidget from "./RemoveWidget";
 
 const WidgetMenu = ({
   dashboardWidgetId,
-  layoutId,
+  dashboardId,
 }: {
   dashboardWidgetId: string;
-  layoutId: string;
+  dashboardId: string;
 }) => {
   const [open, setOpen] = useState(false);
+  const handleMenu = () => {
+    setOpen(false)
+  }
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger>
@@ -26,7 +29,8 @@ const WidgetMenu = ({
           <Button disabled>Edit</Button>
           <RemoveWidget
             dashboardWidgetId={dashboardWidgetId}
-            layoutId={layoutId}
+            dashboardId={dashboardId}
+            handleMenu={handleMenu}
           />
         </div>
       </PopoverContent>

@@ -1,6 +1,15 @@
-import { addWidgetSchema } from "@/lib/validators";
-import { z } from "zod";
 
+
+
+export type Layout = {
+    lg: {
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+      i: string;
+    }[];
+  };
 
 // export type DashboardWidget = {
 //     id: string,
