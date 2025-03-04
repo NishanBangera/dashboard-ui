@@ -23,7 +23,14 @@ import {
   SelectValue,
 } from "./ui/select";
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
 import { addWidgetSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -51,13 +58,14 @@ const AddWidget = ({
   const { data } = useQuery({
     queryKey: ["widgets"],
     queryFn: fetchAllWidgets,
+    gcTime: 1000,
   });
 
   const pieWidget = data?.data?.find((widget) => widget.name === "PieChart");
   console.log("checkkk", pieWidget);
 
   const { mutateAsync: createDashboardWidget } = useMutation({
-    mutationFn: (data) => createWidget(data),
+    mutationFn: createWidget,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["fetchDashboards"] });
     },
@@ -138,7 +146,7 @@ const AddWidget = ({
       updateWidget.mutate(strucutredData as any);
       handleMenu();
     } else {
-      await createDashboardWidget(strucutredData as any);
+      await createDashboardWidget(strucutredData);
     }
     setOpen(false);
     form.reset();
@@ -151,12 +159,15 @@ const AddWidget = ({
         if (!isOpen && handleMenu) {
           handleMenu();
         }
+        form.reset()
         setOpen(isOpen);
       }}
     >
       <DialogTrigger asChild>
         {dataValues ? (
-          <Button onClick={() => setOpen(true)}>Edit</Button>
+          <Button className="no-drag" onClick={() => setOpen(true)}>
+            Edit
+          </Button>
         ) : (
           <Button
             variant="outline"
@@ -169,7 +180,7 @@ const AddWidget = ({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[768px] max-h-[90vh] overflow-auto">
+      <DialogContent className="sm:max-w-[768px] max-h-[90vh] overflow-auto no-drag">
         <Form {...form}>
           <form method="post" onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
@@ -207,6 +218,7 @@ const AddWidget = ({
                         </SelectContent>
                       </Select>
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -215,15 +227,18 @@ const AddWidget = ({
                 control={form.control}
                 name="title"
                 render={({ field }) => (
-                  <FormItem className="flex gap-2">
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input
-                        className="max-w-max"
-                        placeholder="Enter title..."
-                        {...field}
-                      />
-                    </FormControl>
+                  <FormItem>
+                    <div className="flex gap-2">
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input
+                          className="max-w-max"
+                          placeholder="Enter title..."
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -260,6 +275,7 @@ const AddWidget = ({
                               x
                             </Button>
                           </div>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -269,10 +285,11 @@ const AddWidget = ({
                   type="button"
                   onClick={() => {
                     groupAppend({ name: "" });
+                    const values = Array.from(
+                      " ".repeat(groupValueFields[0].values.length)
+                    ).map((val) => val.trim());
                     addGroupValueField({
-                      values: Array.from(
-                        " ".repeat(groupValueFields[0].values.length)
-                      ),
+                      values,
                     });
                   }}
                   variant="outline"
@@ -323,6 +340,7 @@ const AddWidget = ({
                               x
                             </Button>
                           </div>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -361,6 +379,7 @@ const AddWidget = ({
                           {...field}
                         />
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -370,10 +389,10 @@ const AddWidget = ({
                 {groupValueFields.map((group, groupIndex) => (
                   <div key={group.id} className="grid gap-3">
                     <h2>Group {groupIndex + 1}</h2>
-                    {group.values.map((value, valueIndex) => (
+                    {group.values.map((_, valueIndex) => (
                       <FormField
                         control={form.control}
-                        key={valueIndex}
+                        key={`${groupIndex}-${valueIndex}`}
                         name={`groupValueFields.${groupIndex}.values.${valueIndex}`}
                         render={({ field }) => (
                           <FormItem>
@@ -389,6 +408,7 @@ const AddWidget = ({
                                 />
                               </FormControl>
                             </div>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />

@@ -18,6 +18,7 @@ import WidgetMenu from "./WidgetMenu";
 import { fetchUser } from "@/lib/actions/user.action";
 import { useUser } from "@clerk/nextjs";
 import { Layout } from "@/types";
+import Image from "next/image";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -25,8 +26,8 @@ const DashboardGrid = () => {
   const queryClient = useQueryClient();
   const { user } = useUser();
 
-  console.log("userrrrr",user?.emailAddresses)
-  console.log("userrrrr2",user?.primaryEmailAddress?.emailAddress)
+  console.log("userrrrr", user?.emailAddresses);
+  console.log("userrrrr2", user?.primaryEmailAddress?.emailAddress);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const upsertingUser = useQuery({
@@ -37,15 +38,13 @@ const DashboardGrid = () => {
         email: user?.primaryEmailAddress?.emailAddress || "",
         username: user?.firstName || "",
       }),
-      enabled:!!user
-  },
-);
+    enabled: !!user,
+  });
 
-
-  const { data: dashboard } = useQuery({
+  const { data: dashboard, isLoading } = useQuery({
     queryKey: ["fetchDashboards"],
     queryFn: () => fetchUserDashboard(user?.id),
-    enabled:!!user
+    enabled: !!user,
   });
 
   const updateLayout = useMutation({
@@ -55,6 +54,17 @@ const DashboardGrid = () => {
     },
   });
 
+  if (isLoading)
+    return (
+      <div className="grow grid place-items-center">
+        <Image
+          src="/assets/loader.gif"
+          height={100}
+          width={100}
+          alt="loading..."
+        />
+      </div>
+    );
   if (!dashboard?.data) return <div></div>;
   console.log("dashboards", dashboard.data);
   const strucutredData = {
@@ -103,7 +113,12 @@ const DashboardGrid = () => {
           <Card key={widget.id} className="">
             <div className="flex justify-between px-5">
               <p>{widget.title}</p>
-              <WidgetMenu dashboardWidgetId={widget.id} dashboardId={dashboard?.data?.id || ''} data={widget.data} title={widget.title}/>
+              <WidgetMenu
+                dashboardWidgetId={widget.id}
+                dashboardId={dashboard?.data?.id || ""}
+                data={widget.data}
+                title={widget.title}
+              />
             </div>
             {widget.widgetType.name === "LineChart" && (
               <Line data={widget.data} />

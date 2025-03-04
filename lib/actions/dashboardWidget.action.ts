@@ -86,6 +86,7 @@ export async function updateDashboardWidget(data,id){
         data:data.data
       }
     })
+    return {success:true}
   } catch (error) {
     return { success: false, error: formatError(error) }
   }
