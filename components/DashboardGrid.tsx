@@ -24,9 +24,12 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 const DashboardGrid = () => {
   const queryClient = useQueryClient();
   const { user } = useUser();
-  console.log("userrrrr",user?.firstName)
 
-  const { data: userData } = useQuery({
+  console.log("userrrrr",user?.emailAddresses)
+  console.log("userrrrr2",user?.primaryEmailAddress?.emailAddress)
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const upsertingUser = useQuery({
     queryKey: ["user"],
     queryFn: () =>
       fetchUser({
@@ -34,14 +37,15 @@ const DashboardGrid = () => {
         email: user?.primaryEmailAddress?.emailAddress || "",
         username: user?.firstName || "",
       }),
-  });
+      enabled:!!user
+  },
+);
 
-  console.log("useeeeeeeeee", userData)
 
   const { data: dashboard } = useQuery({
     queryKey: ["fetchDashboards"],
-    queryFn: () => fetchUserDashboard(userData?.data?.id),
-    enabled:!!userData
+    queryFn: () => fetchUserDashboard(user?.id),
+    enabled:!!user
   });
 
   const updateLayout = useMutation({

@@ -12,7 +12,10 @@ export async function fetchUser({
   email: string;
   username: string;
 }) {
-  if(!id || !email || !username){
+  console.log("iddddd", id)
+  console.log("email", email)
+  console.log("username", username)
+  if(!id || !email){
     return {success:false}
   }
   try {
@@ -27,7 +30,7 @@ export async function fetchUser({
           data: {
             id,
             email,
-            name: username,
+            name: username || "NO_NAME",
           },
         });
         await tx.dashboard.create({

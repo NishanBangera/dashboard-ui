@@ -4,7 +4,6 @@ import { auth } from "@clerk/nextjs/server";
 
 const Home = async() => {
   const {userId} = await auth()
-
   if(!userId){
     return <div>Sign in to view this page</div>
   }

@@ -36,16 +36,24 @@ const Navbar = () => {
         <Rocket size={14} className="text-slate-500" />
         <Settings size={14} className="text-slate-500" />
         <div>
-        <SignedOut>
-          <SignInButton />
-          <SignUpButton />
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+          <SignedOut>
+            <SignInButton />
+            <SignUpButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton
+              appearance={{
+                elements: {
+                  userButtonAvatarBox: {
+                    width: "20px",
+                    height: "20px",
+                  },
+                },
+              }}
+            />
+          </SignedIn>
+        </div>
       </div>
-      </div>
-      
     </div>
   );
 };
